@@ -1,4 +1,4 @@
-import { IModelBase, IValidator } from '@nickmorton/yes-admin-common';
+import { IModelBase, IValidator, NotFoundError, ValidationError } from '@nickmorton/yes-admin-common';
 import { Collection, Db, MongoClient, ObjectID } from 'mongodb';
 import { IApiConfig } from '../api.config';
 
@@ -38,7 +38,7 @@ export abstract class RepositoryBase<TEntity extends IModelBase> implements IRep
 					reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
 				}
 			} else {
-				reject(new Error('Validation failed'));
+				reject(new ValidationError());
 			}
 		});
 	}
@@ -53,7 +53,7 @@ export abstract class RepositoryBase<TEntity extends IModelBase> implements IRep
 				if (entities && entities.length > 0) {
 					return resolve(entities[0]);
 				}
-				reject(new Error('Not found'));
+				reject(new NotFoundError());
 			} catch (err) {
 				reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
 			}
@@ -75,7 +75,7 @@ export abstract class RepositoryBase<TEntity extends IModelBase> implements IRep
 					reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
 				}
 			} else {
-				reject(new Error('Validation failed'));
+				reject(new ValidationError());
 			}
 		});
 	}
