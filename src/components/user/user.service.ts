@@ -1,9 +1,9 @@
-import { IPagedRequest, IPagedResponse, IRequest, IResponse, IUser } from '@nickmorton/yes-admin-common';
+import { IPagedResponse, IRequest, IResponse, IUser, IUserGetRequest } from '@nickmorton/yes-admin-common';
 import { IRepository } from '../../lib';
 import { IUserBusinessRules } from './user.business-rules';
 
 export class UserService {
-	constructor(private repository: IRepository<IUser>, private businessRules: IUserBusinessRules) {
+	constructor(private repository: IRepository<IUser, IUserGetRequest>, private businessRules: IUserBusinessRules) {
 	}
 
 	public getById = (request: IRequest<string>): Promise<IResponse<IUser>> => {
@@ -11,8 +11,8 @@ export class UserService {
 			.then((user) => ({ entity: user }));
 	}
 
-	public get = (request: IPagedRequest<void>): Promise<IPagedResponse<IUser>> => {
-		return this.repository.get({ skip: +request.skip, limit: +request.limit })
+	public get = (request: IUserGetRequest): Promise<IPagedResponse<IUser>> => {
+		return this.repository.get(request)
 			.then((users) => ({ entities: users }));
 	}
 
