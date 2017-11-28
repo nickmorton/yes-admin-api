@@ -1,4 +1,4 @@
-import { IModelBase, IValidator, NotFoundError, ValidationError } from '@nickmorton/yes-admin-common';
+import { IModelBase, IPagedRequest, IValidator, NotFoundError, ValidationError } from '@nickmorton/yes-admin-common';
 import { Collection, Db, MongoClient, ObjectID } from 'mongodb';
 import { IApiConfig } from '../api.config';
 
@@ -9,21 +9,23 @@ export interface IGetAllCriteria {
 	limit: number;
 }
 
-export interface IRepository<TEntity extends IModelBase> {
+export interface IRepository<TEntity extends IModelBase, TGetRequest extends IPagedRequest> {
 	getById(id: string): Promise<TEntity>;
-	get(criteria?: IGetAllCriteria): Promise<TEntity[]>;
+	get(request?: TGetRequest): Promise<TEntity[]>;
 	add(entity: TEntity): Promise<TEntity>;
 	update(entity: TEntity): Promise<TEntity>;
 }
 
-export abstract class RepositoryBase<TEntity extends IModelBase> implements IRepository<TEntity> {
+export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest extends IPagedRequest>
+	implements IRepository<TEntity, TGetRequest> {
+
 	constructor(
 		private config: IApiConfig,
 		private collectionName: string,
 		private validator: IValidator<TEntity>) {
 	}
 
-	public abstract get(criteria?: IGetAllCriteria): Promise<TEntity[]>;
+	public abstract get(request?: TGetRequest): Promise<TEntity[]>;
 
 	public add(entity: TEntity): Promise<TEntity> {
 		return new Promise<TEntity>(async (resolve, reject) => {
