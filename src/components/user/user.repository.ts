@@ -20,16 +20,22 @@ export class UserRepository extends RepositoryBase<IUser, IUserGetRequest> imple
 			const names = request.name.trim().split(' ');
 			switch (names.length) {
 				case 1:
-					nameRegexp = new RegExp(request.name, 'i');
+					nameRegexp = new RegExp(names[0], 'i');
 					criteria = { $or: [{ forename: nameRegexp }, { surname: nameRegexp }] };
 					break;
 
 				case 2:
-					criteria = { $and: [{ forename: new RegExp(names[0], 'i') }, { surname: new RegExp(names[1], 'i') }] };
+					const nameRegexpList = [new RegExp(names[0], 'i'), new RegExp(names[1], 'i')];
+					criteria = {
+						$and: [
+							{ forename: { $in: nameRegexpList } },
+							{ surname: { $in: nameRegexpList } },
+						],
+					};
 					break;
 
 				default:
-					const nameTerms = names.reduce((terms, name) => {
+					const nameTerms = names.reduce((terms: string[], name: string) => {
 						nameRegexp = new RegExp(name, 'i');
 						return [...terms, { forename: nameRegexp }, { surname: nameRegexp }];
 					}, []);
@@ -39,13 +45,16 @@ export class UserRepository extends RepositoryBase<IUser, IUserGetRequest> imple
 			}
 		}
 
-		return this.collection(db).find<IUser>(criteria)
-			.skip(+request.skip)
-			.limit(+request.limit)
-			.toArray()
-			.then((result) => {
-				db.close();
-				return result;
-			});
+		try {
+			return await this.collection(db).find<IUser>(criteria)
+				.sort(request.sort)
+				.skip(+request.skip)
+				.limit(+request.limit)
+				.toArray();
+		} catch (err) {
+			console.log(err);
+		} finally {
+			db.close();
+		}
 	}
 }

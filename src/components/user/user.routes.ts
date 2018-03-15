@@ -1,4 +1,4 @@
-import { IPagedResponse, IResponse, IUser, UserValidator  } from '@nickmorton/yes-admin-common';
+import { IPagedResponse, IResponse, IUser, IUserGetRequest, UserValidator  } from '@nickmorton/yes-admin-common';
 import * as e from 'express';
 import { IApiConfig } from '../../api.config';
 import { Lazy } from '../../lib';
@@ -16,7 +16,11 @@ export function register(app: e.Application, config: IApiConfig) {
 			service.instance.getById({ data: req.params.id }).then((response: IResponse<IUser>) => res.json(response));
 		})
 		.get(baseUrl, (req: e.Request, res: e.Response) => {
-			service.instance.get(req.query).then((response: IPagedResponse<IUser>) => res.json(response));
+			const params: IUserGetRequest = {
+				...req.query,
+				sort: JSON.parse(req.query.sort),
+			};
+			service.instance.get(params).then((response: IPagedResponse<IUser>) => res.json(response));
 		})
 		.post(`${baseUrl}`, (req: e.Request, res: e.Response) => {
 			service.instance.add(req.body).then((response: IResponse<IUser>) => res.json(response));

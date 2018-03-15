@@ -9,14 +9,14 @@ export interface IGetAllCriteria {
 	limit: number;
 }
 
-export interface IRepository<TEntity extends IModelBase, TGetRequest extends IPagedRequest> {
+export interface IRepository<TEntity extends IModelBase, TGetRequest extends IPagedRequest<TEntity>> {
 	getById(id: string): Promise<TEntity>;
 	get(request?: TGetRequest): Promise<TEntity[]>;
 	add(entity: TEntity): Promise<TEntity>;
 	update(entity: TEntity): Promise<TEntity>;
 }
 
-export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest extends IPagedRequest>
+export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest extends IPagedRequest<TEntity>>
 	implements IRepository<TEntity, TGetRequest> {
 
 	constructor(
