@@ -1,13 +1,18 @@
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as e from 'express';
+import * as helmet from 'helmet';
 import { apiConfig } from './api.config';
 import * as apiRoutes from './api.routes';
 
 const port: number = process.argv[2] || process.env.PORT || 3000;
 const app: e.Express = e();
+// TODO: Authentication
+// TODO: Session management, include httpOnly for session cookie against XSS
+// TODO: Input validation
 
 app
+	.use(helmet())
 	.use(cors())
 	.use(bodyParser.json());
 
