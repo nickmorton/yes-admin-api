@@ -1,15 +1,14 @@
-import { IPagedResponse, IResponse, IUser, IUserGetRequest, UserValidator  } from '@nickmorton/yes-admin-common';
+import { IPagedResponse, IResponse, IUser, IUserGetRequest, UserValidator } from '@nickmorton/yes-admin-common';
 import * as e from 'express';
 import { IApiConfig } from '../../api.config';
 import { Lazy } from '../../lib';
-import { UserBusinessRules } from './user.business-rules';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
 
 export function register(app: e.Application, config: IApiConfig) {
 	const baseUrl = '/api/users';
 	const service: Lazy<UserService> = new Lazy(
-		() => new UserService(new UserRepository(config, new UserValidator()), new UserBusinessRules())
+		() => new UserService(new UserRepository(config, new UserValidator()))
 	);
 	app
 		.get(`${baseUrl}/:id`, (req: e.Request, res: e.Response) => {
