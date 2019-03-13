@@ -3,5 +3,5 @@ export interface IApiConfig {
 }
 
 export const apiConfig: IApiConfig = {
-	dbUrl: 'mongodb://127.0.0.1:27017/yes',
+	dbUrl: process.env.MONGO_URL || 'mongodb://localhost:27017/yes-admin',
 };
