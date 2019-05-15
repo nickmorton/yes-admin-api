@@ -1,5 +1,5 @@
 import {
-	IPagedResponse, IResponse, IUserVisit, IUserVisitGetRequest, UserValidator, UserVisitValidator
+	IPagedResponse, IResponse, IUserVisit, IUserVisitsGetRequest, UserValidator, UserVisitValidator
 } from '@nickmorton/yes-admin-common';
 import * as e from 'express';
 import { IApiConfig } from '../../api.config';
@@ -10,7 +10,6 @@ import { UserVisitRepository } from './user-visit.repository';
 import { UserVisitService } from './user-visit.service';
 
 export function register(app: e.Application, config: IApiConfig) {
-	const baseUrl = '/api/users/:userId/visits';
 	const service: Lazy<UserVisitService> = new Lazy(
 		() => new UserVisitService(
 			new UserVisitRepository(config, new UserVisitValidator()),
@@ -20,20 +19,29 @@ export function register(app: e.Application, config: IApiConfig) {
 	);
 
 	app
-		.get(`${baseUrl}/:id`, (req: e.Request, res: e.Response) => {
-			service.instance.getById({ data: req.params.id }).then((response: IResponse<IUserVisit>) => res.json(response));
+		.get('/api/users/:userId/visits', (req, res, next) => {
+			const params: IUserVisitsGetRequest = { ...req.query, userId: req.params.userId };
+			if (req.query.sort) {
+				params.sort = JSON.parse(req.query.sort);
+			}
+			service.instance.get(params)
+				.then((response: IPagedResponse<IUserVisit>) => res.json(response))
+				.catch((err) => next(err));
 		})
-		.get(baseUrl, (req: e.Request, res: e.Response) => {
-			const params: IUserVisitGetRequest = {
-				...req.query,
-				sort: JSON.parse(req.query.sort),
-			};
-			service.instance.get(params).then((response: IPagedResponse<IUserVisit>) => res.json(response));
+		.post('/api/users/:userId/visits', (req, res, next) => {
+			service.instance.add(req.params.userId, req.body)
+				.then((response: IResponse<IUserVisit>) => res.json(response))
+				.catch((err) => next(err));
+
 		})
-		.post(`${baseUrl}`, (req: e.Request, res: e.Response) => {
-			service.instance.add(req.body).then((response: IResponse<IUserVisit>) => res.json(response));
+		.get('/api/visits/:visitId', (req, res, next) => {
+			service.instance.getById(req.params.visitId)
+				.then((response: IResponse<IUserVisit>) => res.json(response))
+				.catch((err) => next(err));
 		})
-		.put(`${baseUrl}`, (req: e.Request, res: e.Response) => {
-			service.instance.update(req.body).then((response: IResponse<IUserVisit>) => res.json(response));
+		.put('/api/visits/:visitId', (req, res, next) => {
+			service.instance.update(req.body)
+				.then((response: IResponse<IUserVisit>) => res.json(response))
+				.catch((err) => next(err));
 		});
 }
