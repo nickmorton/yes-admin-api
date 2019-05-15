@@ -5,11 +5,6 @@ export class UserService {
 	constructor(private repository: IRepository<IUser, IUserGetRequest>) {
 	}
 
-	public getById = (request: IRequest<string>): Promise<IResponse<IUser>> => {
-		return this.repository.getById(request.data)
-			.then((user) => ({ entity: user }));
-	}
-
 	public get = (request: IUserGetRequest): Promise<IPagedResponse<IUser>> => {
 		return this.repository.get(request)
 			.then((users) => ({ entities: users }));
@@ -17,6 +12,11 @@ export class UserService {
 
 	public add = (request: IRequest<IUser>): Promise<IResponse<IUser>> => {
 		return this.repository.add(request.data)
+			.then((user) => ({ entity: user }));
+	}
+
+	public getById = (userId: string): Promise<IResponse<IUser>> => {
+		return this.repository.getById(userId)
 			.then((user) => ({ entity: user }));
 	}
 

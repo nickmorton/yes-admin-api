@@ -5,19 +5,20 @@ import * as users from './components/user/user.routes';
 
 export function register(app: Application, config: IApiConfig) {
 	app
-		.get('/*', (req, res, next) => {
+		.get('/health', (_req, res) => res.sendStatus(204))
+		.get('/*', (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		})
-		.post('/*', (req, res, next) => {
+		.post('/*', (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		})
-		.put('/*', (req, res, next) => {
+		.put('/*', (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		})
-		.delete('/*', (req, res, next) => {
+		.delete('/*', (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		});

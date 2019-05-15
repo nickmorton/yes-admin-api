@@ -33,7 +33,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "@nickmorton/yes-admin-common": "^1.0.0",
+    "@nickmorton/yes-admin-common": "1.0.1",
     "body-parser": "^1.17.1",
     "cors": "^2.8.4",
     "errorhandler": "^1.5.0",

@@ -27,13 +27,15 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 
 	public abstract get(request?: TGetRequest): Promise<TEntity[]>;
 
-	public add(entity: TEntity): Promise<TEntity> {
+	public add<TEntityDb extends TEntity>(entity: TEntityDb, toObjectIdMappings: {
+		[P in keyof TEntity]?: ObjectID;
+	} = {}): Promise<TEntity> {
 		return new Promise<TEntity>(async (resolve, reject) => {
 			if (this.validator.validate(entity)) {
 				entity.lastUpdated = entity.createdDate = new Date();
 				try {
 					const db = await this.db;
-					const result = await this.collection(db).insertOne(entity);
+					const result = await this.collection(db).insertOne(Object.assign(entity, toObjectIdMappings));
 					entity._id = result.insertedId.toHexString();
 					resolve(entity);
 				} catch (err) {
@@ -65,6 +67,7 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 	public update(entity: TEntity): Promise<TEntity> {
 		return new Promise<TEntity>(async (resolve, reject) => {
 			if (this.validator.validate(entity)) {
+				// TODO: We should clone the entity here.
 				const id: ObjectID = new ObjectID(entity._id);
 				delete entity._id;
 				entity.lastUpdated = new Date();
