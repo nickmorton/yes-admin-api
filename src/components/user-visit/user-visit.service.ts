@@ -16,8 +16,8 @@ export class UserVisitService {
 		private userRespository: IRepository<IUser, IUserGetRequest>,
 		private userBusinessRules: IUserBusinessRules) { }
 
-	public async getById(request: IRequest<{ userId: string, visitId: string }>): Promise<IResponse<IUserVisit>> {
-		const entity = await this.visitRepository.getById(request.data.visitId);
+	public async getById(visitId: string): Promise<IResponse<IUserVisit>> {
+		const entity = await this.visitRepository.getById(visitId);
 		return { entity };
 	}
 

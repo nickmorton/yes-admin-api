@@ -27,7 +27,24 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 
 	public abstract get(request?: TGetRequest): Promise<TEntity[]>;
 
-	public add<TEntityDb extends TEntity>(entity: TEntityDb, toObjectIdMappings: {
+	public getById(id: string): Promise<TEntity> {
+		return new Promise<TEntity>(async (resolve, reject) => {
+			try {
+				const db = await this.db;
+				const entities = await this.collection(db).find<TEntity>({ _id: new ObjectID(id) })
+					.limit(1)
+					.toArray();
+				if (entities && entities.length > 0) {
+					return resolve(entities[0]);
+				}
+				reject(new NotFoundError());
+			} catch (err) {
+				reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
+			}
+		});
+	}
+
+	public add(entity: TEntity, toObjectIdMappings: {
 		[P in keyof TEntity]?: ObjectID;
 	} = {}): Promise<TEntity> {
 		return new Promise<TEntity>(async (resolve, reject) => {
@@ -47,33 +64,16 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 		});
 	}
 
-	public getById(id: string): Promise<TEntity> {
-		return new Promise<TEntity>(async (resolve, reject) => {
-			try {
-				const db = await this.db;
-				const entities = await this.collection(db).find<TEntity>({ _id: new ObjectID(id) })
-					.limit(1)
-					.toArray();
-				if (entities && entities.length > 0) {
-					return resolve(entities[0]);
-				}
-				reject(new NotFoundError());
-			} catch (err) {
-				reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
-			}
-		});
-	}
-
-	public update(entity: TEntity): Promise<TEntity> {
+	public update(entity: TEntity, toObjectIdMappings: {
+		[P in keyof TEntity]?: ObjectID;
+	} = {}): Promise<TEntity> {
 		return new Promise<TEntity>(async (resolve, reject) => {
 			if (this.validator.validate(entity)) {
-				// TODO: We should clone the entity here.
 				const id: ObjectID = new ObjectID(entity._id);
-				delete entity._id;
-				entity.lastUpdated = new Date();
+				const { _id, ...updatedEntity } = { ...entity, ...toObjectIdMappings, lastUpdated: new Date() };
 				try {
 					const db = await this.db;
-					await this.collection(db).replaceOne({ _id: id }, entity);
+					await this.collection(db).replaceOne({ _id: id }, updatedEntity);
 					entity._id = id.toHexString();
 					resolve(entity);
 				} catch (err) {
