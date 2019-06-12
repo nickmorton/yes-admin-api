@@ -30,7 +30,7 @@
     "@types/node": "^7.0.12",
     "@types/serve-static": "^1.7.31",
     "tslint": "^5.1.0",
-    "typescript": "^2.4.1"
+    "typescript": "^3.5.1"
   },
   "dependencies": {
     "@nickmorton/yes-admin-common": "1.0.1",
