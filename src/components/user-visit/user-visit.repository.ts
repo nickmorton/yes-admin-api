@@ -32,4 +32,8 @@ export class UserVisitRepository
 	public add(entity: IUserVisit): Promise<IUserVisit> {
 		return super.add(entity, { _userId: new ObjectID(entity._userId)});
 	}
+
+	public update(entity: IUserVisit): Promise<IUserVisit> {
+		return super.update(entity, { _userId: new ObjectID(entity._userId)});
+	}
 }
