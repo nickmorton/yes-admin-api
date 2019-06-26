@@ -1,5 +1,5 @@
 import { IUserVisit, IUserVisitsGetRequest, UserVisitValidator } from '@nickmorton/yes-admin-common';
-import { ObjectID } from 'mongodb';
+import { MongoClient, ObjectID } from 'mongodb';
 import { IApiConfig } from '../../api.config';
 import { IRepository, RepositoryBase } from '../../lib';
 
@@ -12,11 +12,11 @@ export class UserVisitRepository
 	}
 
 	public async get(request: IUserVisitsGetRequest): Promise<IUserVisit[]> {
-		const db = await this.db;
 		const criteria = { _userId: new ObjectID(request.userId) };
-
+		let client: MongoClient;
 		try {
-			const result = await this.collection(db).find<IUserVisit>(criteria)
+			client = await this.mongoClient();
+			const result = await this.collection(client).find<IUserVisit>(criteria)
 				.sort(request.sort)
 				.skip(+request.skip)
 				.limit(+request.limit)
@@ -25,15 +25,15 @@ export class UserVisitRepository
 		} catch (err) {
 			console.log(err);
 		} finally {
-			db.close();
+			client.close();
 		}
 	}
 
 	public add(entity: IUserVisit): Promise<IUserVisit> {
-		return super.add(entity, { _userId: new ObjectID(entity._userId)});
+		return super.add(entity, { _userId: new ObjectID(entity._userId) });
 	}
 
 	public update(entity: IUserVisit): Promise<IUserVisit> {
-		return super.update(entity, { _userId: new ObjectID(entity._userId)});
+		return super.update(entity, { _userId: new ObjectID(entity._userId) });
 	}
 }
