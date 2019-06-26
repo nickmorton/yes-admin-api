@@ -14,7 +14,7 @@ const app: e.Express = e();
 app
 	.use(helmet())
 	.use(cors())
-	.use(bodyParser.json());
+	.use(bodyParser.json({ reviver: dateReviver }));
 
 apiRoutes.register(app, apiConfig);
 
@@ -34,3 +34,11 @@ app
 app.listen(port, () => {
 	console.log(`This express app is listening on port: ${port}`);
 });
+
+function dateReviver(_key: string, value: any): any {
+	if (typeof value === 'string' && /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/.test(value)) {
+		return new Date(value);
+	}
+
+	return value;
+}
