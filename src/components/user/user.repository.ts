@@ -1,4 +1,5 @@
 import { IUser, IUserGetRequest, UserValidator } from '@nickmorton/yes-admin-common';
+import { MongoClient } from 'mongodb';
 import { IApiConfig } from '../../api.config';
 import { IRepository, RepositoryBase } from '../../lib';
 
@@ -12,9 +13,7 @@ export class UserRepository extends RepositoryBase<IUser, IUserGetRequest> imple
 	// // db.users.insert({ forename: 'Nathan', surname: 'Morton', dob: new Date(2005, 6, 15) })
 
 	public async get(request: IUserGetRequest): Promise<IUser[]> {
-		const db = await this.db;
 		let criteria = {};
-
 		if (request.name) {
 			let nameRegexp: RegExp;
 			const names = request.name.trim().split(' ');
@@ -45,8 +44,10 @@ export class UserRepository extends RepositoryBase<IUser, IUserGetRequest> imple
 			}
 		}
 
+		let client: MongoClient;
 		try {
-			return await this.collection(db).find<IUser>(criteria)
+			client = await this.mongoClient();
+			return await this.collection(client).find<IUser>(criteria)
 				.sort(request.sort)
 				.skip(+request.skip)
 				.limit(+request.limit)
@@ -54,7 +55,7 @@ export class UserRepository extends RepositoryBase<IUser, IUserGetRequest> imple
 		} catch (err) {
 			console.log(err);
 		} finally {
-			db.close();
+			client.close();
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { IModelBase, IPagedRequest, IValidator, NotFoundError, ValidationError } from '@nickmorton/yes-admin-common';
-import { Collection, Db, MongoClient, ObjectID } from 'mongodb';
+import { Collection, MongoClient, ObjectID } from 'mongodb';
 import { IApiConfig } from '../api.config';
 
 const UNSPECIFIED_ERROR = 'Unspecified error';
@@ -29,9 +29,10 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 
 	public getById(id: string): Promise<TEntity> {
 		return new Promise<TEntity>(async (resolve, reject) => {
+			let client: MongoClient;
 			try {
-				const db = await this.db;
-				const entities = await this.collection(db).find<TEntity>({ _id: new ObjectID(id) })
+				client = await this.mongoClient();
+				const entities = await this.collection(client).find<TEntity>({ _id: new ObjectID(id) })
 					.limit(1)
 					.toArray();
 				if (entities && entities.length > 0) {
@@ -40,6 +41,8 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 				reject(new NotFoundError());
 			} catch (err) {
 				reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
+			} finally {
+				client.close();
 			}
 		});
 	}
@@ -50,13 +53,16 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 		return new Promise<TEntity>(async (resolve, reject) => {
 			if (this.validator.validate(entity)) {
 				entity.lastUpdated = entity.createdDate = new Date();
+				let client: MongoClient;
 				try {
-					const db = await this.db;
-					const result = await this.collection(db).insertOne(Object.assign(entity, toObjectIdMappings));
+					client = await this.mongoClient();
+					const result = await this.collection(client).insertOne(Object.assign(entity, toObjectIdMappings));
 					entity._id = result.insertedId.toHexString();
 					resolve(entity);
 				} catch (err) {
 					reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
+				} finally {
+					client.close();
 				}
 			} else {
 				reject(new ValidationError());
@@ -71,13 +77,16 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 			if (this.validator.validate(entity)) {
 				const id: ObjectID = new ObjectID(entity._id);
 				const { _id, ...updatedEntity } = { ...entity, ...toObjectIdMappings, lastUpdated: new Date() };
+				let client: MongoClient;
 				try {
-					const db = await this.db;
-					await this.collection(db).replaceOne({ _id: id }, updatedEntity);
+					client = await this.mongoClient();
+					await this.collection(client).replaceOne({ _id: id }, updatedEntity);
 					entity._id = id.toHexString();
 					resolve(entity);
 				} catch (err) {
 					reject(new Error(err.errmsg || err.message || UNSPECIFIED_ERROR));
+				} finally {
+					client.close();
 				}
 			} else {
 				reject(new ValidationError());
@@ -85,11 +94,11 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 		});
 	}
 
-	protected get db(): Promise<Db> {
+	protected mongoClient(): Promise<MongoClient> {
 		return MongoClient.connect(this.config.dbUrl);
 	}
 
-	protected collection(db: Db): Collection {
-		return db.collection(this.collectionName);
+	protected collection(mongoClient: MongoClient): Collection {
+		return mongoClient.db().collection(this.collectionName);
 	}
 }
