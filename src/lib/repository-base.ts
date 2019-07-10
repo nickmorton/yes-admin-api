@@ -95,7 +95,7 @@ export abstract class RepositoryBase<TEntity extends IModelBase, TGetRequest ext
 	}
 
 	protected mongoClient(): Promise<MongoClient> {
-		return MongoClient.connect(this.config.dbUrl);
+		return MongoClient.connect(this.config.dbUrl, { useNewUrlParser: true });
 	}
 
 	protected collection(mongoClient: MongoClient): Collection {
