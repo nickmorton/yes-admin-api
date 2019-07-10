@@ -28,6 +28,18 @@ export function register(app: e.Application, config: IApiConfig) {
 				.then((response: IPagedResponse<IUserVisit>) => res.json(response))
 				.catch((err) => next(err));
 		})
+		.get('/api/users/:userId/visits/latest', (req, res, next) => {
+			const params: IUserVisitsGetRequest = { limit: 1, skip: 0, sort: { date: -1 }, userId: req.params.userId };
+			service.instance.get(params)
+				.then((response: IPagedResponse<IUserVisit>) => {
+					if (response.entities.length === 1) {
+						res.json({ entity: response.entities[0] } as IResponse<IUserVisit>);
+					} else {
+						res.json({ entity: null } as IResponse<IUserVisit>);
+					}
+				})
+				.catch((err) => next(err));
+		})
 		.post('/api/users/:userId/visits', (req, res, next) => {
 			service.instance.add(req.params.userId, req.body)
 				.then((response: IResponse<IUserVisit>) => res.json(response))
