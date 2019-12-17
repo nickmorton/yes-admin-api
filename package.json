@@ -44,6 +44,7 @@
     "mongodb": "3.2.7",
     "morgan": "1.9.1",
     "passport": "0.4.0",
-    "passport-google-verify-token": "0.3.0"
+    "passport-google-verify-token": "0.3.0",
+    "winston": "3.2.1"
   }
 }
