@@ -1,24 +1,25 @@
 import { Application } from 'express';
 import { IApiConfig } from './api.config';
+import { authenticate } from './authentication';
 import * as userVisits from './components/user-visit/user-visit.routes';
 import * as users from './components/user/user.routes';
 
 export function register(app: Application, config: IApiConfig) {
 	app
 		.get('/health', (_req, res) => res.sendStatus(204))
-		.get('/*', (_req, res, next) => {
+		.get('/*', authenticate(), (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		})
-		.post('/*', (_req, res, next) => {
+		.post('/*', authenticate(), (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		})
-		.put('/*', (_req, res, next) => {
+		.put('/*', authenticate(), (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		})
-		.delete('/*', (_req, res, next) => {
+		.delete('/*', authenticate(), (_req, res, next) => {
 			res.contentType('application/json');
 			next();
 		});

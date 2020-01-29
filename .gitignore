@@ -1,5 +1,7 @@
 # Ignore npm packages, typings and vs settings.
+.env
 .vscode
 build
+google-oauth20.config.json
 node_modules
 npm-debug.log

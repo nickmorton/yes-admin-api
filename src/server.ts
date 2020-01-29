@@ -1,20 +1,32 @@
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
+import { config as dotenvConfig } from 'dotenv';
 import * as e from 'express';
 import * as helmet from 'helmet';
 import { apiConfig } from './api.config';
 import * as apiRoutes from './api.routes';
+import { authenticate, configureAuthentication } from './authentication';
 
-const port: number = +process.argv[2] || +process.env.PORT || 3000;
+dotenvConfig();
+
+const port: number = +process.env.PORT || 3000;
 const app: e.Express = e();
-// TODO: Authentication
-// TODO: Session management, include httpOnly for session cookie against XSS
 // TODO: Input validation with joi
+
+configureAuthentication(app);
 
 app
 	.use(helmet())
 	.use(cors())
 	.use(bodyParser.json({ reviver: dateReviver }));
+
+app.post(
+	'/api/auth/google/token',
+	authenticate(),
+	(req, res) => {
+		console.log(req);
+		res.send(req.user);
+	});
 
 apiRoutes.register(app, apiConfig);
 
