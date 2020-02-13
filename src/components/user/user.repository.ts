@@ -52,8 +52,6 @@ export class UserRepository extends RepositoryBase<IUser, IUserGetRequest> imple
 				.skip(+request.skip)
 				.limit(+request.limit)
 				.toArray();
-		} catch (err) {
-			console.log(err);
 		} finally {
 			client.close();
 		}

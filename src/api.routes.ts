@@ -1,8 +1,8 @@
 import { Application } from 'express';
 import { IApiConfig } from './api.config';
-import { authenticate } from './authentication';
 import * as userVisits from './components/user-visit/user-visit.routes';
 import * as users from './components/user/user.routes';
+import { authenticate } from './lib';
 
 export function register(app: Application, config: IApiConfig) {
 	app

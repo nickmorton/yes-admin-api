@@ -29,8 +29,8 @@
         "@types/node": "11.13.15",
         "@types/passport": "1.0.2",
         "@types/serve-static": "1.13.2",
-        "tslint": "5.18.0",
-        "typescript": "3.5.2"
+        "tslint": "5.20.0",
+        "typescript": "3.7.5"
     },
     "dependencies": {
         "@nickmorton/yes-admin-common": "1.0.3",

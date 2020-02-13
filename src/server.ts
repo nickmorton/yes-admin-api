@@ -5,7 +5,7 @@ import * as e from 'express';
 import * as helmet from 'helmet';
 import { apiConfig } from './api.config';
 import * as apiRoutes from './api.routes';
-import { authenticate, configureAuthentication } from './authentication';
+import { authenticate, configureAuthentication, logger } from './lib';
 
 dotenvConfig();
 
@@ -24,7 +24,6 @@ app.post(
 	'/api/auth/google/token',
 	authenticate(),
 	(req, res) => {
-		console.log(req);
 		res.send(req.user);
 	});
 
@@ -32,19 +31,18 @@ apiRoutes.register(app, apiConfig);
 
 app
 	.use((req, res) => {
-		console.log(`Not found '${req.url}'`);
+		logger.warn(`Not found '${req.url}'`);
 		res
 			.type('text/plain')
 			.status(404)
 			.send('404 - Not Found');
 	})
 	.use((err: any, _req: e.Request, _res: e.Response, _next: e.NextFunction) => {
-		// TODO: implement error handler and logging
-		console.error(err);
+		logger.error(err);
 	});
 
 app.listen(port, () => {
-	console.log(`This express app is listening on port: ${port}`);
+	logger.info(`This express app is listening on port: ${port}`);
 });
 
 function dateReviver(_key: string, value: any): any {
