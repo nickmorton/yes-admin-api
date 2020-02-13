@@ -22,8 +22,6 @@ export class UserVisitRepository
 				.limit(+request.limit)
 				.toArray();
 			return result;
-		} catch (err) {
-			console.log(err);
 		} finally {
 			client.close();
 		}

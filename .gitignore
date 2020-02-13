@@ -3,5 +3,6 @@
 .vscode
 build
 google-oauth20.config.json
+logs
 node_modules
 npm-debug.log
