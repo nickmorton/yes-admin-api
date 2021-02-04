@@ -16,39 +16,39 @@ const app: e.Express = e();
 configureAuthentication(app);
 
 app
-	.use(helmet())
-	.use(cors())
-	.use(bodyParser.json({ reviver: dateReviver }));
+    .use(helmet())
+    .use(cors())
+    .use(bodyParser.json({ reviver: dateReviver }));
 
 app.post(
-	'/api/auth/google/token',
-	authenticate(),
-	(req, res) => {
-		res.send(req.user);
-	});
+    '/api/auth/google/token',
+    authenticate(),
+    (req, res) => {
+        res.send(req.user);
+    });
 
 apiRoutes.register(app, apiConfig);
 
 app
-	.use((req, res) => {
-		logger.warn(`Not found '${req.url}'`);
-		res
-			.type('text/plain')
-			.status(404)
-			.send('404 - Not Found');
-	})
-	.use((err: any, _req: e.Request, _res: e.Response, _next: e.NextFunction) => {
-		logger.error(err);
-	});
+    .use((req, res) => {
+        logger.warn(`Not found '${req.url}'`);
+        res
+            .type('text/plain')
+            .status(404)
+            .send('404 - Not Found');
+    })
+    .use((err: any, _req: e.Request, _res: e.Response, _next: e.NextFunction) => {
+        logger.error(err);
+    });
 
 app.listen(port, () => {
-	logger.info(`This express app is listening on port: ${port}`);
+    logger.info(`This express app is listening on port: ${port}`);
 });
 
 function dateReviver(_key: string, value: any): any {
-	if (typeof value === 'string' && /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/.test(value)) {
-		return new Date(value);
-	}
+    if (typeof value === 'string' && /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/.test(value)) {
+        return new Date(value);
+    }
 
-	return value;
+    return value;
 }

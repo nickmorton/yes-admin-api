@@ -1,49 +1,60 @@
 {
-  "extends": "tslint:recommended",
-  "rules": {
-    "no-console": [
-      false
-    ],
-    "indent": [true, "tabs", 4],
-    "max-classes-per-file": [
-      false
-    ],
-    "member-ordering": [
-      true,
-      {
-        "order": "instance-sandwich"
-      }
-    ],
-    "max-line-length": [
-      true,
-      140
-    ],
-    "no-conditional-assignment": false,
-    "no-var-requires": false,
-    "object-literal-sort-keys": false,
-    "object-literal-key-quotes": [
-      true,
-      "as-needed"
-    ],
-    "quotemark": [
-      true,
-      "single"
-    ],
-    "trailing-comma": [
-      true,
-      {
-        "multiline": {
-          "arrays": "always",
-          "functions": "never",
-          "objects": "always"
-        }
-      }
-    ],
-    "variable-name": [
-      true,
-      "ban-keywords",
-      "check-format",
-      "allow-leading-underscore"
-    ]
-  }
+    "extends": "tslint:recommended",
+    "rules": {
+        "arrow-parens": false,
+        "indent": [
+            true,
+            "spaces",
+            4
+        ],
+        "max-classes-per-file": [
+            false,
+            1
+        ],
+        "max-line-length": [
+            true,
+            140
+        ],
+        "member-ordering": [
+            true,
+            {
+                "order": "instance-sandwich"
+            }
+        ],
+        "no-conditional-assignment": false,
+        "no-console": [
+            false
+        ],
+        "no-var-requires": false,
+        "object-literal-sort-keys": false,
+        "object-literal-key-quotes": [
+            true,
+            "as-needed"
+        ],
+        "ordered-imports": true,
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "trailing-comma": [
+            true,
+            {
+                "multiline": {
+                    "arrays": "always",
+                    "functions": "never",
+                    "objects": "always"
+                }
+            }
+        ],
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore"
+        ]
+    }
 }
